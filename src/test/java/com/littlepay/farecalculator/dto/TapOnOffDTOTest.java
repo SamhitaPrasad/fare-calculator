@@ -1,7 +1,8 @@
 package com.littlepay.farecalculator.dto;
 
-import com.littlepay.farecalculator.TripStatus;
+import com.littlepay.farecalculator.enums.TripStatus;
 
+import com.littlepay.farecalculator.rules.CalculateStatusRule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,12 +12,14 @@ import java.time.format.DateTimeFormatter;
 
 public class TapOnOffDTOTest {
     static TapOnOffDTO tapOnOffDTO;
+    static CalculateStatusRule calculateStatusRule;
     static Taps tapOn;
     static Taps tapOff;
     static DateTimeFormatter formatter;
 
     @BeforeAll
     public static void init() {
+        calculateStatusRule = new CalculateStatusRule();
         tapOnOffDTO = new TapOnOffDTO();
         tapOn = new Taps();
         tapOff = new Taps();
@@ -34,7 +37,7 @@ public class TapOnOffDTOTest {
         tapOn.setStopId("Stop1");
 //        tapOff.setStopId(null);
         //When Then
-        Assertions.assertEquals(null, tapOnOffDTO.getTripStatus());
+        Assertions.assertEquals(null, calculateStatusRule.getTripStatus(tapOnOffDTO.getTapOn(), tapOnOffDTO.getTapOff()));
     }
 
     @Test
@@ -48,7 +51,7 @@ public class TapOnOffDTOTest {
         tapOnOffDTO.setTapOn(tapOn);
         tapOnOffDTO.setTapOff(tapOff);
         //Then
-        Assertions.assertEquals(TripStatus.COMPLETE, tapOnOffDTO.getTripStatus());
+        Assertions.assertEquals(TripStatus.COMPLETE, calculateStatusRule.getTripStatus(tapOnOffDTO.getTapOn(), tapOnOffDTO.getTapOff()));
     }
 
     @Test
@@ -60,7 +63,7 @@ public class TapOnOffDTOTest {
         tapOnOffDTO.setTapOn(tapOn);
         tapOnOffDTO.setTapOff(null);
         //Then
-        Assertions.assertEquals(TripStatus.INCOMPLETE, tapOnOffDTO.getTripStatus());
+        Assertions.assertEquals(TripStatus.INCOMPLETE, calculateStatusRule.getTripStatus(tapOnOffDTO.getTapOn(), tapOnOffDTO.getTapOff()));
     }
     
     @Test
@@ -74,12 +77,13 @@ public class TapOnOffDTOTest {
         tapOnOffDTO.setTapOn(tapOn);
         tapOnOffDTO.setTapOff(tapOff);
         //Then
-        Assertions.assertEquals(TripStatus.CANCELLED, tapOnOffDTO.getTripStatus());
+        Assertions.assertEquals(TripStatus.CANCELLED, calculateStatusRule.getTripStatus(tapOnOffDTO.getTapOn(), tapOnOffDTO.getTapOff()));
     }
 
 
     @AfterAll
     public static void destroy() {
+        calculateStatusRule = null;
         tapOnOffDTO = null;
         tapOn = null;
         tapOff = null;

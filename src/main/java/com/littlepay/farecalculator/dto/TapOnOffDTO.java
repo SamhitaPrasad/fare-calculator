@@ -1,8 +1,10 @@
 package com.littlepay.farecalculator.dto;
 
-import com.littlepay.farecalculator.TripStatus;
+import com.littlepay.farecalculator.enums.Rule;
+import com.littlepay.farecalculator.enums.TripStatus;
 import com.littlepay.farecalculator.common.Util;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class TapOnOffDTO {
@@ -11,6 +13,21 @@ public class TapOnOffDTO {
     private Taps tapOff;
 
     private double fare;
+    private Map<Rule,Object> ruleSpecs;
+
+    public Map<Rule, Object> getRuleSpecs() {
+        return ruleSpecs;
+    }
+
+    public void setRuleSpecs(Map<Rule, Object> ruleSpecs) {
+        this.ruleSpecs = ruleSpecs;
+    }
+
+    public TripStatus getTripStatus() {
+        return tripStatus;
+    }
+
+
 
     public double getFare() {
         return fare;
@@ -50,17 +67,17 @@ public class TapOnOffDTO {
         this.tripStatus = tripStatus;
     }
 
-    public TripStatus getTripStatus() {
-        if (null != tapOn && null == tapOff)
-            return TripStatus.INCOMPLETE;
-        else if (Util.equalsWithNulls(tapOn, tapOff) && tapOn.tapType.equals("ON") && tapOff.tapType.equals("OFF")) {
-                if (null != tapOn.stopId && null != tapOff.stopId && tapOn.stopId != tapOff.stopId)
-                    return TripStatus.COMPLETE;
-                else if (tapOn.stopId == tapOff.stopId)
-                    return TripStatus.CANCELLED;
-            }
-        return null;
-    }
+//    public TripStatus getTripStatus() {
+//        if (null != tapOn && null == tapOff)
+//            return TripStatus.INCOMPLETE;
+//        else if (Util.equalsWithNulls(tapOn, tapOff) && tapOn.tapType.equals("ON") && tapOff.tapType.equals("OFF")) {
+//                if (null != tapOn.stopId && null != tapOff.stopId && tapOn.stopId != tapOff.stopId)
+//                    return TripStatus.COMPLETE;
+//                else if (tapOn.stopId == tapOff.stopId)
+//                    return TripStatus.CANCELLED;
+//            }
+//        return null;
+//    }
 
 
     @Override
