@@ -2,6 +2,8 @@ package com.littlepay.farecalculator.service;
 
 import com.littlepay.farecalculator.dto.TapOnOffDTO;
 import com.littlepay.farecalculator.dto.Taps;
+import com.littlepay.farecalculator.exception.EmptyCSVException;
+import com.littlepay.farecalculator.exception.RuleException;
 import com.littlepay.farecalculator.parser.CSVParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,7 +18,7 @@ import java.util.Map;
 
 public class AggregatorServiceTest {
     @Test
-    public void matchAndPrice_success() throws IOException {
+    public void matchAndPrice_success() throws IOException, RuleException, EmptyCSVException {
         //Given - if you send a multipart file, it returns a list of TapOnOFFDto
         MultipartFile file = Mockito.mock(MultipartFile.class);
         AggregatorService aggregatorService = Mockito.mock(AggregatorService.class);
@@ -41,7 +43,7 @@ public class AggregatorServiceTest {
     }
 
     @Test
-    public void readAndParse_success(){
+    public void readAndParse_success() throws EmptyCSVException {
         //Given - if you send a multipart file, it returns a list of Taps
         MultipartFile file = Mockito.mock(MultipartFile.class);
         Reader reader = Mockito.mock(Reader.class);

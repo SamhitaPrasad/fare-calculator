@@ -41,12 +41,6 @@ public class FareCalculationEvaluator {
     public Map<Rule, Object> calculateFare(TapOnOffDTO tapOnOffDTO) {
 
         Map<Rule, Object> ruleOutcome = new HashMap<>();
-        //TODO: Check for errors before validating and proceeding
-        if (tapOnOffDTO == null) {
-            logger.error("error trying to check rules but tapOnOffDTO is empty");
-            ruleOutcome.put(Rule.ERROR, "Something happened in calcuteFare");
-            return ruleOutcome;
-        }
 
         ruleOutcome.putAll(calculateStatusRule.runRule(tapOnOffDTO));
         ruleOutcome.putAll(calculateFareRule.runRule(tapOnOffDTO));

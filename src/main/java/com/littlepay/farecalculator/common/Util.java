@@ -2,6 +2,7 @@ package com.littlepay.farecalculator.common;
 
 import com.littlepay.farecalculator.dto.TapOnOffDTO;
 
+import java.lang.reflect.Field;
 import java.time.temporal.ChronoUnit;
 
 public class Util {
@@ -44,6 +45,22 @@ public class Util {
             }
         }
         return cost;
+    }
+
+
+    public static boolean isBeanEmpty(Object o)  {
+
+        for (Field field : o.getClass().getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+                if (field.get(o)!=null) {
+                    return false;
+                }
+            } catch (Exception e) {
+                System.out.println("Exception occured in processing");
+            }
+        }
+        return true;
     }
 }
 

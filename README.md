@@ -64,6 +64,7 @@ curl http://localhost:8080/api/csv/test
 2. You can also see the output printed as a json on the console.
 
 ###Sample output
+1. Happy Path
 ```
 samhita@ /f/development/poc/fare-calculator-poc/fare-calculator (main)
 $ curl -v -F file=@/f/development/poc/fare-calculator-poc/fare-calculator/src/main/resources/taps.csv http://localhost:8081/api/csv/upload
@@ -128,8 +129,37 @@ $ curl -v -F file=@/f/development/poc/fare-calculator-poc/fare-calculator/src/ma
   }
 ]
 * Connection #0 to host localhost left intact
-
 ```
+
+2. when a wrong/empty CSV is supplied:
+```
+$ curl -v -F file=@/f/development/poc/fare-calculator-poc/fare-calculator/src/main/resources/application.yml http://localhost:8081/api/csv/upload
+* timeout on name lookup is not supported
+*   Trying ::1...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Connected to localhost (::1) port 8081 (#0)
+> POST /api/csv/upload HTTP/1.1
+> Host: localhost:8081
+> User-Agent: curl/7.49.1
+> Accept: */*
+> Content-Length: 610
+> Expect: 100-continue
+> Content-Type: multipart/form-data; boundary=------------------------4ca263922ae61566
+>
+< HTTP/1.1 100
+} [159 bytes data]
+100   610    0     0  100   610      0     30  0:00:20  0:00:20 --:--:--     0< HTTP/1.1 500
+< Content-Type: application/json
+< Transfer-Encoding: chunked
+< Date: Wed, 01 Dec 2021 09:51:40 GMT
+< Connection: close
+<
+{ [34 bytes data]
+100   638    0    28  100   610      1     29  0:00:21  0:00:20  0:00:01     0[{"message":"CSV is empty"}]
+* Closing connection 0
+```
+
 
 ## Assumptions
 1. That the input file is well-formed and is not missing data and validated.
@@ -145,10 +175,9 @@ $ curl -v -F file=@/f/development/poc/fare-calculator-poc/fare-calculator/src/ma
 3. Exception Handling.
 4. Builder pattern.
 5. IOC normalizing across project.
-6. Adding class level comments.
-7. TODO's in code level.
-8. Basic flow and Architecture Diagrams.
-9. Currently using public modifiers, this need to be updated.
+6. TODO's in code level.
+7. Architecture Diagram.
+8. Currently using public modifiers, this need to be updated.
 
 ## Project Flow and Structure and Specifications
 1. The FareCalculatorApplication is the entry point for the application where it loads the profile from application.yml.

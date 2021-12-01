@@ -3,38 +3,41 @@ package com.littlepay.farecalculator.dto;
 import com.littlepay.farecalculator.common.LocalDateTimeConverter;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
+import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
+@Validated
 public class Taps {
 
     @CsvBindByName(column = "ID")
-    @NotNull
+    @NotEmpty
     public String id;
 
     @CsvCustomBindByName(column = "DateTimeUTC", converter = LocalDateTimeConverter.class)
-    @NotNull
+    @NotEmpty
     public LocalDateTime dateTimeUTC;
 
     @CsvBindByName(column = "TapType")
-    @NotNull
+    @NotEmpty
     public String tapType;
 
     @CsvBindByName(column = "StopId")
-    @NotNull
+    @NotEmpty
     public String stopId;
 
     @CsvBindByName(column = "CompanyId")
-    @NotNull
+    @NotEmpty
     public String companyId;
 
     @CsvBindByName(column = "BusID")
-    @NotNull
+    @NotEmpty
     public String busId;
 
     @CsvBindByName(column = "PAN")
-    @NotNull
+    @NotEmpty
     public String pan;
 
     public Taps() {

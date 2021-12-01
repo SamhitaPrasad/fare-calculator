@@ -2,6 +2,7 @@ package com.littlepay.farecalculator.parser;
 
 import com.littlepay.farecalculator.dto.Taps;
 
+import com.littlepay.farecalculator.exception.EmptyCSVException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CSVParserTests {
 
     @Test
-    void parse_csv_success() throws FileNotFoundException {
+    void parse_csv_success() throws FileNotFoundException, EmptyCSVException {
         List<Taps> result = new ArrayList<>();
         Reader csvReader = Mockito.mock(Reader.class);
         Taps t = new Taps("", null,"","","","","");

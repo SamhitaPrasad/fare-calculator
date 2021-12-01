@@ -6,6 +6,9 @@ import com.littlepay.farecalculator.dto.TapOnOffDTO;
 import com.littlepay.farecalculator.dto.Taps;
 import com.littlepay.farecalculator.enums.Rule;
 import com.littlepay.farecalculator.enums.TripStatus;
+import com.littlepay.farecalculator.exception.CSVCreationException;
+import com.littlepay.farecalculator.exception.EmptyCSVException;
+import com.littlepay.farecalculator.exception.RuleException;
 import com.littlepay.farecalculator.parser.CSVParser;
 import com.littlepay.farecalculator.rules.FareCalculationEvaluator;
 import com.littlepay.farecalculator.writer.CSVWriter;
@@ -33,11 +36,21 @@ public class AggregatorService {
 
     Logger logger = LoggerFactory.getLogger(AggregatorService.class);
     @Autowired
-    FareCalculationEvaluator fareCalculationEvaluator;
+    private FareCalculationEvaluator fareCalculationEvaluator;
 
-    public List<TapOnOffDTO> matchAndPrice(MultipartFile file) throws IOException {
+    @Autowired
+    private CSVParser csvParser;
+
+    @Autowired
+    private CSVWriter csvWriter;
+
+
+    public List<TapOnOffDTO> matchAndPrice(MultipartFile file) throws EmptyCSVException {
         Map<Rule, Object> ruleSpecs;
         List<Taps> allTapsList = readAndParse(file);
+        if(allTapsList.size()==0){
+            throw new EmptyCSVException("CSV file may contain no data");
+        }
         List<TapOnOffDTO> matchedTaps = matchTrips(allTapsList);
 //        FareCalculationEvaluator fareCalculationEvaluator = new FareCalculationEvaluator();
         //streams is good to have if we can have void methods, since this returns a complex data type its gets tricky to manage using streams
@@ -54,11 +67,15 @@ public class AggregatorService {
         return matchedTaps;
     }
 
-    public List<Taps> readAndParse(MultipartFile file) throws IOException {
+    public List<Taps> readAndParse(MultipartFile file) throws EmptyCSVException {
         logger.info("Inside match and price");
+        Reader reader = null;
+        try {
+            reader = new InputStreamReader(file.getInputStream());
+        } catch (IOException e) {
+            logger.error("Error while parsing csv file: {}", e.getMessage());
+        }
         //TODO: Convert to IoC
-        Reader reader = new InputStreamReader(file.getInputStream());
-        CSVParser csvParser = new CSVParser();
         List<Taps> taps = csvParser.parse(reader);
         logger.info("Contents of the parse are: {}", taps.toString());
         return taps;
@@ -110,15 +127,24 @@ public class AggregatorService {
         return finalList;
     }
 
-    public List<CSVOutput> createOutput(List<TapOnOffDTO> tapOnOffDTO) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, URISyntaxException {
+    public List<CSVOutput> createOutput(List<TapOnOffDTO> tapOnOffDTO) {
         List<CSVOutput> csvOutput = createCSVConvertableOutput(tapOnOffDTO);
-        writeOutputCSV(csvOutput);
         return csvOutput;
     }
 
-    public void writeOutputCSV(List<CSVOutput> csvOutput) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, URISyntaxException {
-        CSVWriter csvWriter = new CSVWriter();
-        csvWriter.output(csvOutput);
+    public void writeOutputCSV(List<CSVOutput> csvOutput) throws CSVCreationException {
+        try {
+            csvWriter.output(csvOutput);
+        } catch (CsvRequiredFieldEmptyException e) {
+            logger.error("CsvRequiredFieldEmptyException while reading file: {}",e.getMessage());
+            throw new CSVCreationException("CSV creation exception");
+        } catch (CsvDataTypeMismatchException e) {
+            logger.error("CsvDataTypeMismatchException while reading file: {}",e.getMessage());
+            throw new CSVCreationException("CSV creation exception");
+        } catch (URISyntaxException e) {
+            logger.error("URISyntaxException while reading file: {}",e.getMessage());
+            throw new CSVCreationException("Exception with URI Syntax");
+        }
     }
 
     private List<CSVOutput> createCSVConvertableOutput(List<TapOnOffDTO> tapOnOffDTO) {
@@ -133,16 +159,19 @@ public class AggregatorService {
 
     private CSVOutput mapToBean(TapOnOffDTO tapOnOffDTOElement) {
         CSVOutput csvOutput = new CSVOutput();
-//        long duration = Util.getTimeDifferenceInMillis(tapOnOffDTOElement);
 
         TripStatus status = (TripStatus) tapOnOffDTOElement.getRuleSpecs().get(Rule.STATUS);
         switch (status) {
             case INCOMPLETE:
                 beanForIncomplete(tapOnOffDTOElement, csvOutput, status);
                 break;
-            default:
+            case COMPLETE:
+            case CANCELLED:
                 beanForCompletedAndCancelled(tapOnOffDTOElement, csvOutput, status);
                 break;
+            default:
+                logger.error("Invalid Status: {}", status);
+
         }
 
         return csvOutput;
