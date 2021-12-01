@@ -14,7 +14,7 @@ public class YAMLConfig {
     private String name;
     private String environment;
     private boolean enabled;
-    private  String matrix;
+    private String matrix;
 
 
     private Map<String, String> stops = new HashMap<String, String>();

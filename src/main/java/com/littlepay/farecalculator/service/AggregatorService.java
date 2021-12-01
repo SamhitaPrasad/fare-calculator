@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +44,8 @@ public class AggregatorService {
         //or will have to create a custom collector class, so keeping it simple.
         //Map<String, Object> ruleSpecs = matchedTaps.stream().map(tapOnOffDTO -> fareCalculationEvaluator.calculateFare(tapOnOffDTO)).collect(Map);
 
-        for (ListIterator<TapOnOffDTO> iter = matchedTaps.listIterator(); iter.hasNext(); ) {
-            TapOnOffDTO element = iter.next();
+        for (ListIterator<TapOnOffDTO> iterator = matchedTaps.listIterator(); iterator.hasNext(); ) {
+            TapOnOffDTO element = iterator.next();
             ruleSpecs = fareCalculationEvaluator.calculateFare(element);
             element.setRuleSpecs(ruleSpecs);
             //Setting null here enables us to re-use this variable for every iteration
@@ -62,7 +63,15 @@ public class AggregatorService {
         logger.info("Contents of the parse are: {}", taps.toString());
         return taps;
     }
+    //TODO: Convert to concurrent list
 
+    /**
+     * matchTrips takkes in the list of allTaps received from parsing and matches TapOn and TapOff data by copying the matched taps into a tempList and removing them from the result list once matched
+     * in order to reduce number of looping iterations.
+     * Within the tempList we match the pan numbers to tapOn and TapOff to get objects of trips per pan number.
+     * @param allTaps
+     * @return List<TapOnOffDTO>
+     */
     public List<TapOnOffDTO> matchTrips(List<Taps> allTaps) {
         List<TapOnOffDTO> finalList = new ArrayList<>();
         TapOnOffDTO tapOnOffDTO = null;
@@ -101,11 +110,15 @@ public class AggregatorService {
         return finalList;
     }
 
-    public List<CSVOutput> createOutput(List<TapOnOffDTO> tapOnOffDTO) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
-        CSVWriter csvWriter = new CSVWriter();
+    public List<CSVOutput> createOutput(List<TapOnOffDTO> tapOnOffDTO) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, URISyntaxException {
         List<CSVOutput> csvOutput = createCSVConvertableOutput(tapOnOffDTO);
-        csvWriter.output(csvOutput);
+        writeOutputCSV(csvOutput);
         return csvOutput;
+    }
+
+    public void writeOutputCSV(List<CSVOutput> csvOutput) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, URISyntaxException {
+        CSVWriter csvWriter = new CSVWriter();
+        csvWriter.output(csvOutput);
     }
 
     private List<CSVOutput> createCSVConvertableOutput(List<TapOnOffDTO> tapOnOffDTO) {

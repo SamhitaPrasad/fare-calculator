@@ -15,6 +15,7 @@ import java.util.*;
  * Rules are just added to the collection manually here for illustrative purposes, but in a real application you
  * would more likely load them dynamically with an IoC container or something similar without having to change
  * FareCalculationEvaluator.
+ *
  */
 @Service
 public class FareCalculationEvaluator {
@@ -33,9 +34,7 @@ public class FareCalculationEvaluator {
     private final List<Fare> rules;
 
     public FareCalculationEvaluator() {
-        //TODO: Convert to IOC
-//        rules = Collections.unmodifiableList(Arrays.asList(new CalculateFareRule(), new CalculateDurationRule(), new CalculateStatusRule()));
-//        rules = Collections.unmodifiableList(Arrays.asList(calculateFareRule));
+        //TODO: Create a new rule annotation to avoid hard coding, this will prvent hard coding of rules in lines 57-59
         rules = (Arrays.asList(calculateFareRule));
     }
 

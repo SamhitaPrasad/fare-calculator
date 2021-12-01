@@ -1,19 +1,20 @@
 package com.littlepay.farecalculator.rules;
 
 import com.littlepay.farecalculator.common.Util;
-import com.littlepay.farecalculator.config.YAMLConfig;
 import com.littlepay.farecalculator.dto.TapOnOffDTO;
 import com.littlepay.farecalculator.dto.Taps;
 import com.littlepay.farecalculator.enums.Rule;
 import com.littlepay.farecalculator.enums.TripStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The CalculateStatusRule returns the status of the trip.
+ */
 @Component
 public class CalculateStatusRule implements Fare {
     Logger logger = LoggerFactory.getLogger(CalculateStatusRule.class);

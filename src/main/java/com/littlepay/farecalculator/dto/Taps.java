@@ -7,10 +7,8 @@ import com.opencsv.bean.CsvCustomBindByName;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-
 public class Taps {
 
-    private static final long serialVersionUID = 1L;
     @CsvBindByName(column = "ID")
     @NotNull
     public String id;

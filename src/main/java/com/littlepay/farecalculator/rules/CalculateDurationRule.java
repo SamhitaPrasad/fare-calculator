@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class return the duration between two stops.
+ */
 @Component
 public class CalculateDurationRule implements Fare{
     Logger logger = LoggerFactory.getLogger(CalculateDurationRule.class);

@@ -3,13 +3,16 @@ package com.littlepay.farecalculator.matrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/**
+ * This class has the logic to calculate the charges for different stops by finding the price on the cost matrix.
+ */
 public class CostEstimation {
 
     static Logger LOGGER = LoggerFactory.getLogger(CostEstimation.class);
 
-    // A recursive function to find the shortest path from
+    // A recursive function to find the cost of a path from
     // source to destination.
+    // TODO: Use this instead of strings
     public static double minCostEstimate(double[][] cost, int source, int destination) {
 
         LOGGER.info("Estimating cost for travelling from {} to {}", (source+1), (destination+1));
@@ -23,11 +26,10 @@ public class CostEstimation {
 
         return min;
     }
-
+    //Overloaded function with String
     public static String  minCostEstimate(String[][] cost, String source, String destination) {
 
         LOGGER.info("Estimating cost for travelling from {} to {}", (source+1), (destination+1));
-
 
         // If source is same as destination or destination is next to source
         if (source == destination || source + 1 == destination)
@@ -38,6 +40,7 @@ public class CostEstimation {
 
         return min;
     }
+
     public static String  maxCostEstimateFromSource(String[][]  cost, String source) {
 
         LOGGER.info("Estimating cost for travelling from {} ", (source + 1));
@@ -65,7 +68,7 @@ public class CostEstimation {
     // This function returns the smallest possible cost to
     // reach station N-1 from station 0.
     public static double minCost(double[][] cost, int source, int destination) {
-//        LOGGER.info("The Minimum cost to reach station from {} to {}", (a+1), (b+1));
+        LOGGER.info("The Minimum cost to reach station from {} to {}", (source+1), (destination+1));
         //TODO: Analyse exception handling vs return 0
         if(source > cost.length || destination > cost.length){
             LOGGER.error("Cannot price for the following source and destination: {} / {}", source, destination);

@@ -2,7 +2,6 @@ package com.littlepay.farecalculator.dto;
 
 import com.littlepay.farecalculator.enums.Rule;
 import com.littlepay.farecalculator.enums.TripStatus;
-import com.littlepay.farecalculator.common.Util;
 
 import java.util.Map;
 import java.util.Objects;
@@ -66,19 +65,6 @@ public class TapOnOffDTO {
     public void setTripStatus(TripStatus tripStatus) {
         this.tripStatus = tripStatus;
     }
-
-//    public TripStatus getTripStatus() {
-//        if (null != tapOn && null == tapOff)
-//            return TripStatus.INCOMPLETE;
-//        else if (Util.equalsWithNulls(tapOn, tapOff) && tapOn.tapType.equals("ON") && tapOff.tapType.equals("OFF")) {
-//                if (null != tapOn.stopId && null != tapOff.stopId && tapOn.stopId != tapOff.stopId)
-//                    return TripStatus.COMPLETE;
-//                else if (tapOn.stopId == tapOff.stopId)
-//                    return TripStatus.CANCELLED;
-//            }
-//        return null;
-//    }
-
 
     @Override
     public String toString() {

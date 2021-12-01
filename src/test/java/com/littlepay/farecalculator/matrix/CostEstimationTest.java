@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CostEstimationTest {
 
     double[][] cost = {{0, 3.25, 7.3}, {3.25, 0, 5.5}, {7.3, 5.5, 0}};
+    String[][] costString = {{"0", "3.25", "7.3"}, {"3.25", "0", "5.5"}, {"7.3", "5.5", "0"}};
 
     @Test
     public void minCostEstimate_scenarios() {
@@ -29,6 +30,21 @@ public class CostEstimationTest {
     @Test
     public void minCostEstimate_IndexOutOfBounds_exception() {
         assertEquals(0, CostEstimation.minCost(cost, 5, 4));
+    }
+
+    /**
+     * If a passenger taps on at one stop but forgets to tap off at another stop, this is called an incomplete trip. The
+     * passenger will be charged the maximum amount for a trip from that stop to any other stop they could have
+     * travelled to. For example, if a passenger taps on at Stop 2, but does not tap off, they could potentially have
+     * travelled to either stop 1 ($3.25) or stop 3 ($5.50), so they will be charged the higher value of $5.50.
+     */
+    @Test
+    public void maxCostEstimateFromSource_scenarios_string() {
+
+        assertEquals("7.3", CostEstimation.maxCostEstimateFromSource(costString, "0"));
+        assertEquals("5.5", CostEstimation.maxCostEstimateFromSource(costString, "1"));
+        assertEquals("7.3", CostEstimation.maxCostEstimateFromSource(costString, "0"));
+
     }
 
 }

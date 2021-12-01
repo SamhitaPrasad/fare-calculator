@@ -2,7 +2,7 @@ spring:
   profiles:
     active:
     - test
-matrix: "{{0, 3.25, 7.3}, {3.25, 0, 5.5},{7.3, 5.5, 0}}"
+
 ---
 
 spring:
@@ -32,4 +32,3 @@ spring:
 name: ${DEV_NAME:dev-YAML}
 environment: development
 enabled: true
-
