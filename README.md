@@ -4,7 +4,7 @@
 1. Java 8
 2. Maven 3.8.4
 3. Git Bash
-4. Require access to C Drive to create C:\tmp
+4. Require access to C Drive to create C:\tmp to create and view generated file.
 
 ## Maven Commands
 
@@ -166,27 +166,27 @@ $ curl -v -F file=@/f/development/poc/fare-calculator-poc/fare-calculator/src/ma
 2. File will be sent over REST http POST.
 3. That it's a single Bus and Company.
 4. Stops have equivalent numeric keys which are mapped in the application.yml.
-5. Rate is being calculated from a cost matrix, which is configured in application.yml
-6. Covers few scenarios, mostly happy path in integration testing.
+
 
 ## TODO's
 1.Validation of data.
 2. More test cases around integration and Rules unit tests.
-3. Exception Handling.
+3. Covers few scenarios, mostly happy path in integration testing.
 4. Builder pattern.
-5. IOC normalizing across project.
-6. TODO's in code level.
-7. Architecture Diagram.
-8. Currently using public modifiers, this need to be updated.
+5. TODO's in code level.
+6. Architecture Diagram.
+7. Currently using public modifiers, this need to be updated.
 
 ## Project Flow and Structure and Specifications
 1. The FareCalculatorApplication is the entry point for the application where it loads the profile from application.yml.
 2. Loads all the components and instantiates the classes once complete, it listens on port 8081 for csv files.
 3. The FareCalculatorController receives the input csv file over POST call for "/api/csv/upload" api.
 4. The controller calls AggregatorService to get matchAndPrice.
+5. Rate is being calculated from a cost matrix, which is configured in application.yml
 
 ### Flow
 ![flow](./docs/flow.png)
 
 ## Known Issues
 1. Headers seem to disappear when ordered using position annotation in output.csv
+2. When csv file fields are null the following exception is thrown even though it is handled: CsvRequiredFieldEmptyException.
