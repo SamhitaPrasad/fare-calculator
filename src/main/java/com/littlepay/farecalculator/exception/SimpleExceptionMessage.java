@@ -1,9 +1,5 @@
 package com.littlepay.farecalculator.exception;
 
-import com.littlepay.farecalculator.dto.CSVOutput;
-
-import java.util.List;
-
 public class SimpleExceptionMessage {
 
     private String message;

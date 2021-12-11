@@ -1,6 +1,5 @@
 package com.littlepay.farecalculator.service;
 
-import com.littlepay.farecalculator.common.Util;
 import com.littlepay.farecalculator.dto.CSVOutput;
 import com.littlepay.farecalculator.dto.TapOnOffDTO;
 import com.littlepay.farecalculator.dto.Taps;
@@ -8,7 +7,6 @@ import com.littlepay.farecalculator.enums.Rule;
 import com.littlepay.farecalculator.enums.TripStatus;
 import com.littlepay.farecalculator.exception.CSVCreationException;
 import com.littlepay.farecalculator.exception.EmptyCSVException;
-import com.littlepay.farecalculator.exception.RuleException;
 import com.littlepay.farecalculator.parser.CSVParser;
 import com.littlepay.farecalculator.rules.FareCalculationEvaluator;
 import com.littlepay.farecalculator.writer.CSVWriter;
@@ -20,21 +18,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URISyntaxException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 @Service
 public class AggregatorService {
 
-    Logger logger = LoggerFactory.getLogger(AggregatorService.class);
+    static final Logger logger = LoggerFactory.getLogger(AggregatorService.class);
+
     @Autowired
     private FareCalculationEvaluator fareCalculationEvaluator;
 
@@ -46,28 +45,31 @@ public class AggregatorService {
 
 
     public List<TapOnOffDTO> matchAndPrice(MultipartFile file) throws EmptyCSVException {
-        Map<Rule, Object> ruleSpecs;
         List<Taps> allTapsList = readAndParse(file);
-        if(allTapsList.size()==0){
+        if (allTapsList.size() == 0) {
             throw new EmptyCSVException("CSV file may contain no data");
         }
-        List<TapOnOffDTO> matchedTaps = matchTrips(allTapsList);
-//        FareCalculationEvaluator fareCalculationEvaluator = new FareCalculationEvaluator();
-        //streams is good to have if we can have void methods, since this returns a complex data type its gets tricky to manage using streams
-        //or will have to create a custom collector class, so keeping it simple.
-        //Map<String, Object> ruleSpecs = matchedTaps.stream().map(tapOnOffDTO -> fareCalculationEvaluator.calculateFare(tapOnOffDTO)).collect(Map);
-
-        for (ListIterator<TapOnOffDTO> iterator = matchedTaps.listIterator(); iterator.hasNext(); ) {
-            TapOnOffDTO element = iterator.next();
-            ruleSpecs = fareCalculationEvaluator.calculateFare(element);
-            element.setRuleSpecs(ruleSpecs);
-            //Setting null here enables us to re-use this variable for every iteration
-            ruleSpecs = null;
-        }
-        return matchedTaps;
+        Map<String, Map<String, List<Taps>>> matchedTaps = matchTrips(allTapsList);
+        List<TapOnOffDTO> finalMatchedList = new ArrayList<>();
+        matchedTaps.entrySet().stream().forEach(element -> {
+            final TapOnOffDTO tapOnOffDTO = mapToDTO(element.getValue());
+            final Map<Rule, Object> ruleSpecs = fareCalculationEvaluator.calculateFare(tapOnOffDTO);
+            tapOnOffDTO.setRuleSpecs(ruleSpecs);
+            finalMatchedList.add(tapOnOffDTO);
+        });
+        return finalMatchedList;
     }
 
-    public List<Taps> readAndParse(MultipartFile file) throws EmptyCSVException {
+    public TapOnOffDTO mapToDTO(Map<String, List<Taps>> tapOnOffMap) {
+        TapOnOffDTO tapOnOffDTO = new TapOnOffDTO();
+        if (tapOnOffMap.get("ON") != null)
+            tapOnOffDTO.setTapOn(tapOnOffMap.get("ON").get(0));
+        if (tapOnOffMap.get("OFF") != null)
+            tapOnOffDTO.setTapOff(tapOnOffMap.get("OFF").get(0));
+        return tapOnOffDTO;
+    }
+
+    public List<Taps> readAndParse(MultipartFile file) throws ConstraintViolationException {
         logger.info("Inside match and price");
         Reader reader = null;
         try {
@@ -75,7 +77,6 @@ public class AggregatorService {
         } catch (IOException e) {
             logger.error("Error while parsing csv file: {}", e.getMessage());
         }
-        //TODO: Convert to IoC
         List<Taps> taps = csvParser.parse(reader);
         logger.info("Contents of the parse are: {}", taps.toString());
         return taps;
@@ -86,45 +87,17 @@ public class AggregatorService {
      * matchTrips takkes in the list of allTaps received from parsing and matches TapOn and TapOff data by copying the matched taps into a tempList and removing them from the result list once matched
      * in order to reduce number of looping iterations.
      * Within the tempList we match the pan numbers to tapOn and TapOff to get objects of trips per pan number.
+     *
      * @param allTaps
      * @return List<TapOnOffDTO>
      */
-    public List<TapOnOffDTO> matchTrips(List<Taps> allTaps) {
-        List<TapOnOffDTO> finalList = new ArrayList<>();
-        TapOnOffDTO tapOnOffDTO = null;
-        List<Taps> tempList = new CopyOnWriteArrayList<>(allTaps);//new ArrayList<>(results) ;
+    public Map<String, Map<String, List<Taps>>> matchTrips(List<Taps> allTaps) throws EmptyCSVException {
+        if (allTaps.size() > 0)
+            return allTaps.stream()
+                    .filter(e -> e != null && e.getPan() != null && !e.getPan().isEmpty() && e.getTapType() != null && !e.getTapType().isEmpty())
+                    .collect(Collectors.groupingBy(Taps::getPan, Collectors.groupingBy(Taps::getTapType)));
+        else throw new EmptyCSVException("Null or Empty values");
 
-        ListIterator<Taps> resultIterator = tempList.listIterator();
-        while (resultIterator.hasNext()) {
-            tapOnOffDTO = new TapOnOffDTO();
-            Taps data = resultIterator.next();
-            if (null != data && data.tapType.equals("ON")) {
-                tapOnOffDTO.setTapOn(data);
-            } else {
-                tapOnOffDTO.setTapOff(data);
-            }
-            tempList.remove(data);
-            allTaps.remove(data);
-            ListIterator<Taps> tempIterator = tempList.listIterator();
-            while (tempIterator.hasNext()) {
-                Taps tempData = tempIterator.next();
-                if (tempData.getPan().equals(data.getPan())) {
-                    if (null != tempData && tempData.tapType.equals("ON")) {
-                        tapOnOffDTO.setTapOn(tempData);
-                    } else {
-                        tapOnOffDTO.setTapOff(tempData);
-                    }
-                    tempList.remove(tempData);
-                    allTaps.remove(tempData);
-                    resultIterator = tempList.listIterator();
-                    break;
-                }
-            }
-            finalList.add(tapOnOffDTO);
-            logger.info("Finished sorting data based on PAN, final tapOnOffDTO {}", finalList.toString());
-
-        }
-        return finalList;
     }
 
     public List<CSVOutput> createOutput(List<TapOnOffDTO> tapOnOffDTO) {
@@ -136,13 +109,13 @@ public class AggregatorService {
         try {
             csvWriter.output(csvOutput);
         } catch (CsvRequiredFieldEmptyException e) {
-            logger.error("CsvRequiredFieldEmptyException while reading file: {}",e.getMessage());
+            logger.error("CsvRequiredFieldEmptyException while reading file: {}", e.getMessage());
             throw new CSVCreationException("CSV creation exception");
         } catch (CsvDataTypeMismatchException e) {
-            logger.error("CsvDataTypeMismatchException while reading file: {}",e.getMessage());
+            logger.error("CsvDataTypeMismatchException while reading file: {}", e.getMessage());
             throw new CSVCreationException("CSV creation exception");
         } catch (URISyntaxException e) {
-            logger.error("URISyntaxException while reading file: {}",e.getMessage());
+            logger.error("URISyntaxException while reading file: {}", e.getMessage());
             throw new CSVCreationException("Exception with URI Syntax");
         }
     }

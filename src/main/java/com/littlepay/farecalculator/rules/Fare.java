@@ -14,7 +14,6 @@ import java.util.Map;
 @Repository
 public interface Fare {
 // Should you choose to run a rule based on a particular flag, this helper method wil be handy.
-//    public void shouldRun(TapOnOffDTO tapOnOffDTO);
     public Map<Rule, Object> runRule(TapOnOffDTO tapOnOffDTO);
 
 }

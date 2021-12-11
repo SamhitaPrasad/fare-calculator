@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.*;
 
 /**
@@ -15,12 +16,11 @@ import java.util.*;
  * Rules are just added to the collection manually here for illustrative purposes, but in a real application you
  * would more likely load them dynamically with an IoC container or something similar without having to change
  * FareCalculationEvaluator.
- *
  */
 @Service
 public class FareCalculationEvaluator {
 
-    Logger logger = LoggerFactory.getLogger(FareCalculationEvaluator.class);
+    static final Logger logger = LoggerFactory.getLogger(FareCalculationEvaluator.class);
 
     @Autowired
     CalculateFareRule calculateFareRule;
@@ -31,32 +31,12 @@ public class FareCalculationEvaluator {
     @Autowired
     CalculateStatusRule calculateStatusRule;
 
-    private final List<Fare> rules;
-
-    public FareCalculationEvaluator() {
-        //TODO: Create a new rule annotation to avoid hard coding, this will prvent hard coding of rules in lines 57-59
-        rules = (Arrays.asList(calculateFareRule));
-    }
-
-    public Map<Rule, Object> calculateFare(TapOnOffDTO tapOnOffDTO) {
-
+    public Map<Rule, Object> calculateFare(@Valid TapOnOffDTO tapOnOffDTO) {
         Map<Rule, Object> ruleOutcome = new HashMap<>();
-
         ruleOutcome.putAll(calculateStatusRule.runRule(tapOnOffDTO));
         ruleOutcome.putAll(calculateFareRule.runRule(tapOnOffDTO));
         ruleOutcome.putAll(calculateDurationRule.runRule(tapOnOffDTO));
-
         logger.info("Got rules outcome");
-        /**
-         * Uncomment this for rule validation
-         */
-        /*
-        for ( FareRule rule : rules){
-            if(rule.shouldRun(tapOnOffDTO)){
-                ruleOutcome.put(rule.getClass().toString(), rule.runRule(tapOnOffDTO));
-            }
-        }
-        */
 
         return ruleOutcome;
     }

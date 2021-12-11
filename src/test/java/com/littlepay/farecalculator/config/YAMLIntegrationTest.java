@@ -2,6 +2,7 @@ package com.littlepay.farecalculator.config;
 
 import com.littlepay.farecalculator.FareCalculatorApplication;
 
+import com.littlepay.farecalculator.rules.CalculateFareRule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -24,26 +25,32 @@ class YAMLIntegrationTest {
 
     @Autowired
     private YAMLConfig config;
-    
-    @Test
-    void whenProfileTest_thenNameTesting() {
-        assertTrue("testing".equalsIgnoreCase(config.getEnvironment()));
-        assertTrue("test-YAML".equalsIgnoreCase(config.getName()));
-        assertFalse(config.isEnabled());
-    }
+
+    @Autowired
+    private CalculateFareRule calculateFareRule;
 
     @Test
-    void givenUserDefinedPOJO_whenBindingPropertiesFile_thenAllFieldsAreSet() {
-        String expectedValue = "{{0, 3.25, 7.3}, {3.25, 0, 5.5},{7.3, 5.5, 0}}";
-        assertEquals(expectedValue, config.getMatrix());
+    void getStops_success() {
+        assertEquals(getExpectedStops(), config.getStops());
     }
-    @Test
-    void givenUserDefinedPOJO_whenBindingPropertiesFile_thenAllFieldsAreSet1() {
-        Map<String, String> expectedResourcesPath = new HashMap<>();
-        expectedResourcesPath.put("Stop1", "0");
-        expectedResourcesPath.put("Stop2", "1");
-        expectedResourcesPath.put("Stop3", "2");
-        assertEquals(expectedResourcesPath, config.getStops());
 
+
+    @Test
+    void getStops_calculateFare() {
+        assertEquals(getExpectedStops(), calculateFareRule.getStops());
+    }
+
+    private Map<String, Double> getExpectedStops() {
+        Map<String, Double> expectedStops = new HashMap<>();
+        expectedStops.put("Stop1Stop1",Double.valueOf(0));
+        expectedStops.put("Stop1Stop2",Double.valueOf(3.25));
+        expectedStops.put("Stop1Stop3",Double.valueOf(7.3));
+        expectedStops.put("Stop2Stop1",Double.valueOf(3.25));
+        expectedStops.put("Stop2Stop2",Double.valueOf(0));
+        expectedStops.put("Stop2Stop3",Double.valueOf(5.5));
+        expectedStops.put("Stop3Stop1",Double.valueOf(7.3));
+        expectedStops.put("Stop3Stop2",Double.valueOf(5.5));
+        expectedStops.put("Stop3Stop3",Double.valueOf(0));
+        return expectedStops;
     }
 }

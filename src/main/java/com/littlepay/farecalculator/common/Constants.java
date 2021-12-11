@@ -1,7 +1,5 @@
 package com.littlepay.farecalculator.common;
 
-import java.io.File;
-
 public class Constants {
 
     public static final String C_TMP = "C:/tmp";

@@ -190,3 +190,55 @@ $ curl -v -F file=@/f/development/poc/fare-calculator-poc/fare-calculator/src/ma
 ## Known Issues
 1. Headers seem to disappear when ordered using position annotation in output.csv
 2. When csv file fields are null the following exception is thrown even though it is handled: CsvRequiredFieldEmptyException.
+
+## Refactor
+
+application.yml
+stops:
+Stop1Stop1: 0
+Stop1Stop2: 3.25
+Stop1Stop3: 7.3
+Stop2Stop1: 3.25
+Stop2Stop2: 0
+Stop2Stop3: 5.5
+Stop3Stop1: 7.3
+Stop3Stop2: 5.5
+Stop3Stop3: 0
+
+Data structure change:
+````
+{
+   123={
+      "OFF="[
+         "Taps"{
+            "ID=""",
+            "DateTimeUTC=""null",
+            "TapType=""OFF",
+            "StopId=""",
+            "CompanyId=""",
+            "BusID=""",
+            "PAN=""123"
+         }
+      ],
+      "ON="[
+         "Taps"{
+            "ID=""",
+            "DateTimeUTC=""null",
+            "TapType=""ON",
+            "StopId=""",
+            "CompanyId=""",
+            "BusID=""",
+            "PAN=""123"
+         }
+      ]
+   }
+}
+````
+
+## Refactor:
+
+- Removed static in DTO's
+- made loggers static final as per standard programming practice.
+- refactored matchTrips to loop one time to match pan and TapOnOffDTO using streams
+- reading yaml and mapping it directly to all the possible values as Map
+- used Object.isNull instead of checking custom null check

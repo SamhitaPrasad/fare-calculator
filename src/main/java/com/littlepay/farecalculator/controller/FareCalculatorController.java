@@ -19,13 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.util.List;
 
 @Controller
+@Validated
 @RequestMapping("/api/csv")
 public class FareCalculatorController {
-    Logger logger = LoggerFactory.getLogger(FareCalculatorController.class);
+    static final Logger logger = LoggerFactory.getLogger(FareCalculatorController.class);
 
     @Autowired
     AggregatorService aggregatorService;
@@ -41,6 +43,8 @@ public class FareCalculatorController {
             tapOnOffDTO = aggregatorService.matchAndPrice(file);
         } catch (EmptyCSVException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionUtil.exceptionMessage("CSV is empty"));
+        } catch (ConstraintViolationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionUtil.exceptionMessage("Exception while validating bean"));
         }
         logger.info("Processed csv for tapOn and tapOff matches");
         List<@Valid CSVOutput> csvOutputList = aggregatorService.createOutput(tapOnOffDTO);

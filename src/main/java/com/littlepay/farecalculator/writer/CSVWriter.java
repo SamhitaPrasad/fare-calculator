@@ -28,12 +28,12 @@ public class CSVWriter {
     private StringBuilder stringBuilder = new StringBuilder();
     private Writer writer;
     private FileWriter fileWriter;
-    Logger logger = LoggerFactory.getLogger(CSVWriter.class);
+    static final Logger logger = LoggerFactory.getLogger(CSVWriter.class);
 
     public void output(List<CSVOutput> csvOutput) throws CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, URISyntaxException, CSVCreationException {
         createDirectory();
         try {
-            fileWriter = new FileWriter(getFileName(getNewFilename()));
+            fileWriter = new FileWriter(checkIfFileExists(getNewFilename()));
         } catch (IOException e) {
             logger.error("Error creating file: {}",e.getMessage());
         }
@@ -49,7 +49,7 @@ public class CSVWriter {
     }
 
 
-    public String getFileName(String filename) throws CSVCreationException {
+    public String checkIfFileExists(String filename) throws CSVCreationException {
         if (!file.exists()) {
             try {
                 file.createNewFile();

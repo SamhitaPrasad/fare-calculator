@@ -5,11 +5,12 @@ import com.littlepay.farecalculator.enums.TripStatus;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.bean.CsvCustomBindByName;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-//@CsvBindByNameOrder({"Started","Finished","DurationSecs","FromStopId","ToStopId","ChargeAmount","CompanyId","BusID","PAN","Status"})
+@Validated
 public class CSVOutput {
 
     @CsvCustomBindByName(column = "Started", converter = LocalDateTimeConverter.class)

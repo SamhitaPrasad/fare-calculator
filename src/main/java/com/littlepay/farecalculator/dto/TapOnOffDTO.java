@@ -2,13 +2,18 @@ package com.littlepay.farecalculator.dto;
 
 import com.littlepay.farecalculator.enums.Rule;
 import com.littlepay.farecalculator.enums.TripStatus;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 import java.util.Objects;
 
+@Validated
 public class TapOnOffDTO {
 
+    @NotNull
     private Taps tapOn;
+    @NotNull
     private Taps tapOff;
 
     private double fare;

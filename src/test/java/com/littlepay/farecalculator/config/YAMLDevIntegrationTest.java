@@ -2,6 +2,7 @@ package com.littlepay.farecalculator.config;
 
 import com.littlepay.farecalculator.FareCalculatorApplication;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,8 +27,8 @@ class YAMLDevIntegrationTest {
     
     @Test
     void whenProfileTest_thenNameTesting() {
-        assertTrue("development".equalsIgnoreCase(config.getEnvironment()));
-        assertTrue("dev-YAML".equalsIgnoreCase(config.getName()));
-        assertTrue(config.isEnabled());
+        Map<String, Double> expectedStops = new HashMap<>();
+        expectedStops.put("Stop1Stop1",Double.valueOf(0));
+        Assertions.assertEquals(expectedStops, config.getStops());
     }
 }
