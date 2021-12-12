@@ -11,54 +11,14 @@ import java.util.Map;
 @EnableConfigurationProperties
 @ConfigurationProperties
 public class YAMLConfig {
-    private String name;
-    private String environment;
-    private boolean enabled;
-    private String matrix;
 
+    private Map<String, Double> stops = new HashMap<String, Double>();
 
-    private Map<String, String> stops = new HashMap<String, String>();
-
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public Map<String, String> getStops() {
+    public Map<String, Double> getStops() {
         return stops;
     }
 
-    public void setStops(Map<String, String> stops) {
+    public void setStops(Map<String, Double> stops) {
         this.stops = stops;
     }
-
-    public String getMatrix() {
-        return matrix;
-    }
-
-    public void setMatrix(String matrix) {
-        this.matrix = matrix;
-    }
-
-
 }

@@ -1,6 +1,5 @@
 package com.littlepay.farecalculator.rules;
 
-import com.littlepay.farecalculator.common.Util;
 import com.littlepay.farecalculator.dto.TapOnOffDTO;
 import com.littlepay.farecalculator.dto.Taps;
 import com.littlepay.farecalculator.enums.Rule;
@@ -11,17 +10,18 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * The CalculateStatusRule returns the status of the trip.
  */
 @Component
 public class CalculateStatusRule implements Fare {
-    Logger logger = LoggerFactory.getLogger(CalculateStatusRule.class);
+     static final Logger LOGGER = LoggerFactory.getLogger(CalculateStatusRule.class);
 
     @Override
     public Map<Rule, Object> runRule(TapOnOffDTO tapOnOffDTO) {
-        logger.info("Rules engine - Calculating status");
+        LOGGER.info("Rules engine - Calculating status");
         Map<Rule, Object> fareSpec = new HashMap<>();
         fareSpec.put(Rule.STATUS,getTripStatus(tapOnOffDTO.getTapOn(),tapOnOffDTO.getTapOff()));
         tapOnOffDTO.setTripStatus(getTripStatus(tapOnOffDTO.getTapOn(),tapOnOffDTO.getTapOff()));
@@ -32,7 +32,7 @@ public class CalculateStatusRule implements Fare {
     public TripStatus getTripStatus(Taps tapOn, Taps tapOff) {
         if (null != tapOn && null == tapOff)
             return TripStatus.INCOMPLETE;
-        else if (Util.equalsWithNulls(tapOn, tapOff) && tapOn.tapType.equals("ON") && tapOff.tapType.equals("OFF")) {
+        else if (!Objects.isNull(tapOn) && !Objects.isNull(tapOff) && tapOn.tapType.equals("ON") && tapOff.tapType.equals("OFF")) {
             if (null != tapOn.stopId && null != tapOff.stopId && !tapOn.stopId.equals(tapOff.stopId))
                 return TripStatus.COMPLETE;
             else if (tapOn.stopId.equals(tapOff.stopId))

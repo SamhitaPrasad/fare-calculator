@@ -5,7 +5,9 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
 import org.springframework.validation.annotation.Validated;
 
+
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Validated
@@ -13,30 +15,36 @@ public class Taps {
 
     @CsvBindByName(column = "ID")
     @NotEmpty
+    @NotNull
     public String id;
 
     @CsvCustomBindByName(column = "DateTimeUTC", converter = LocalDateTimeConverter.class)
-    @NotEmpty
+    @NotNull
     public LocalDateTime dateTimeUTC;
 
     @CsvBindByName(column = "TapType")
     @NotEmpty
+    @NotNull
     public String tapType;
 
     @CsvBindByName(column = "StopId")
     @NotEmpty
+    @NotNull
     public String stopId;
 
     @CsvBindByName(column = "CompanyId")
     @NotEmpty
+    @NotNull
     public String companyId;
 
     @CsvBindByName(column = "BusID")
     @NotEmpty
+    @NotNull
     public String busId;
 
     @CsvBindByName(column = "PAN")
     @NotEmpty
+    @NotNull
     public String pan;
 
     public Taps() {
@@ -108,17 +116,16 @@ public class Taps {
         this.pan = pan.trim();
     }
 
-
     @Override
     public String toString() {
         return "Taps{" +
-                "ID='" + id + '\'' +
-                ", DateTimeUTC='" + dateTimeUTC + '\'' +
-                ", TapType='" + tapType + '\'' +
-                ", StopId='" + stopId + '\'' +
-                ", CompanyId='" + companyId + '\'' +
-                ", BusID='" + busId + '\'' +
-                ", PAN='" + pan + '\'' +
+                "id='" + id + '\'' +
+                ", dateTimeUTC=" + dateTimeUTC +
+                ", tapType='" + tapType + '\'' +
+                ", stopId='" + stopId + '\'' +
+                ", companyId='" + companyId + '\'' +
+                ", busId='" + busId + '\'' +
+                ", pan='" + pan + '\'' +
                 '}';
     }
 }

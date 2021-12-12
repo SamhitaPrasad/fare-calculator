@@ -26,7 +26,6 @@ public class TapOnOffDTOTest {
         formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     }
 
-
     @Test
     public void getTripStatus_missing_setters_expect_null() {
         //Given
@@ -35,7 +34,6 @@ public class TapOnOffDTOTest {
         tapOnOffDTO.setTapOn(tapOn);
         tapOnOffDTO.setTapOff(tapOff);
         tapOn.setStopId("Stop1");
-//        tapOff.setStopId(null);
         //When Then
         Assertions.assertEquals(null, calculateStatusRule.getTripStatus(tapOnOffDTO.getTapOn(), tapOnOffDTO.getTapOff()));
     }
@@ -65,7 +63,7 @@ public class TapOnOffDTOTest {
         //Then
         Assertions.assertEquals(TripStatus.INCOMPLETE, calculateStatusRule.getTripStatus(tapOnOffDTO.getTapOn(), tapOnOffDTO.getTapOff()));
     }
-    
+
     @Test
     public void getTripStatus_cancelled_success() {
         //Given
@@ -79,7 +77,6 @@ public class TapOnOffDTOTest {
         //Then
         Assertions.assertEquals(TripStatus.CANCELLED, calculateStatusRule.getTripStatus(tapOnOffDTO.getTapOn(), tapOnOffDTO.getTapOff()));
     }
-
 
     @AfterAll
     public static void destroy() {
