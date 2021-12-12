@@ -193,7 +193,20 @@ $ curl -v -F file=@/f/development/poc/fare-calculator-poc/fare-calculator/src/ma
 
 ## Refactor
 
-application.yml
+1. Before refactor we were reading two configurations from application.yml, matrix and stops to map the cost.
+
+Old Configuration:
+```
+matrix: "{{0, 3.25, 7.3}, {3.25, 0, 5.5},{7.3, 5.5, 0}}"
+
+stops:
+  Stop1: 0
+  Stop2: 1
+  Stop3: 2
+```
+Now, we have a stop to price mapping configured in yaml file.
+We are reading both stops and cost as a key value pair into a Map as follows:
+```
 stops:
 Stop1Stop1: 0
 Stop1Stop2: 3.25
@@ -204,8 +217,10 @@ Stop2Stop3: 5.5
 Stop3Stop1: 7.3
 Stop3Stop2: 5.5
 Stop3Stop3: 0
-
-Data structure change:
+```
+2. Previously, we were iterating through two for loops to compute a pair of matched taps based on pan.
+Now, using streams we are groupingBy pan and tapType in a single iteration.
+Data structure from streams is as below:
 ````
 {
    123={
@@ -234,11 +249,17 @@ Data structure change:
    }
 }
 ````
-
-## Refactor:
+3. Updated pom.xml for validation framework using springboot custom validation as this is validated at bean level,
+reduces using null checks.
+Test case for validation can be found in `AggregatorServiceIntegrationTest`.
+4. Added Exception handler using ControllerAdvice.
+## Code changes
 
 - Removed static in DTO's
-- made loggers static final as per standard programming practice.
-- refactored matchTrips to loop one time to match pan and TapOnOffDTO using streams
-- reading yaml and mapping it directly to all the possible values as Map
-- used Object.isNull instead of checking custom null check
+- Made loggers static final as per standard programming practice and code clean up.
+- Refactored matchTrips to loop one time to match pan and TapOnOffDTO using streams.
+- Reading yaml and mapping it directly to all the possible values as Map.
+- Used Object.isNull instead of checking custom null check.
+- Added more test cases for most of the scenarios.
+- Used ControllerAdvice for exception handling to make Controller more readable.
+- Bean validation.

@@ -83,12 +83,11 @@ public class AggregatorService {
     }
 
     /**
-     * matchTrips takes in the list of allTaps received from parsing and matches TapOn and TapOff data by copying the matched taps into a tempList and removing them from the result list once matched
-     * in order to reduce number of looping iterations.
-     * Within the tempList we match the pan numbers to tapOn and TapOff to get objects of trips per pan number.
+     * matchTrips takes in the list of allTaps received from parsing and matches TapOn and TapOff data.
+     * We use streams to match by pan and in the same iteration we group by tapType.
      *
      * @param allTaps
-     * @return List<TapOnOffDTO>
+     * @return Map<String, Map<String, List<Taps>>>
      */
     public Map<String, Map<String, List<Taps>>> matchTrips(List<Taps> allTaps) throws EmptyCSVException {
         if (allTaps.size() > 0)
