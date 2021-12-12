@@ -35,4 +35,11 @@ public class ExceptionMessage {
         this.csvOutputList = csvOutputList;
     }
 
+    @Override
+    public String toString() {
+        return "ExceptionMessage{" +
+                "message='" + message + '\'' +
+                ", csvOutputList=" + csvOutputList +
+                '}';
+    }
 }

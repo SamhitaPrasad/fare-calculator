@@ -116,17 +116,16 @@ public class Taps {
         this.pan = pan.trim();
     }
 
-
     @Override
     public String toString() {
         return "Taps{" +
-                "ID='" + id + '\'' +
-                ", DateTimeUTC='" + dateTimeUTC + '\'' +
-                ", TapType='" + tapType + '\'' +
-                ", StopId='" + stopId + '\'' +
-                ", CompanyId='" + companyId + '\'' +
-                ", BusID='" + busId + '\'' +
-                ", PAN='" + pan + '\'' +
+                "id='" + id + '\'' +
+                ", dateTimeUTC=" + dateTimeUTC +
+                ", tapType='" + tapType + '\'' +
+                ", stopId='" + stopId + '\'' +
+                ", companyId='" + companyId + '\'' +
+                ", busId='" + busId + '\'' +
+                ", pan='" + pan + '\'' +
                 '}';
     }
 }

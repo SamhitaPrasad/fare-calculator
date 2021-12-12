@@ -3,185 +3,182 @@ package com.littlepay.farecalculator.service;
 import com.littlepay.farecalculator.dto.TapOnOffDTO;
 import com.littlepay.farecalculator.dto.Taps;
 import com.littlepay.farecalculator.exception.EmptyCSVException;
-import com.littlepay.farecalculator.exception.RuleException;
 import com.littlepay.farecalculator.parser.CSVParser;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
+
 
 public class AggregatorServiceTest {
+
+    TapOnOffDTO tapOnOffDTO;
+    Taps tapOn;
+    Taps tapOff;
+    List<Taps> allTapsList;
+    Map<String, Map<String, List<Taps>>> expectedTapOnOffDTOS;
+    Map<String, List<Taps>> expectedTaps;
+    List<Taps> listTapOn;
+    List<Taps> listTapOff;
+    List<TapOnOffDTO> tapOnOffDTOList;
+    AggregatorService aggregatorService;
+    Map<String, List<Taps>> allTapsMap;
+
+    @BeforeEach
+    public void init() {
+        tapOnOffDTO = new TapOnOffDTO();
+        tapOn = new Taps();
+        tapOff = new Taps();
+        allTapsList = new ArrayList<>();
+        listTapOn = new ArrayList<>();
+        listTapOff = new ArrayList<>();
+        expectedTapOnOffDTOS = new HashMap<>();
+        expectedTaps = new HashMap<>();
+        tapOnOffDTOList = new ArrayList<>();
+        aggregatorService = new AggregatorService();
+        allTapsMap = new HashMap<>();
+    }
+
     @Test
-    public void matchAndPrice_success() throws IOException, RuleException, EmptyCSVException {
+    public void matchAndPrice_success() throws EmptyCSVException {
         //Given - if you send a multipart file, it returns a list of TapOnOFFDto
         MultipartFile file = Mockito.mock(MultipartFile.class);
-        AggregatorService aggregatorService = Mockito.mock(AggregatorService.class);
+        AggregatorService aggregatorServiceMock = Mockito.mock(AggregatorService.class);
         Reader reader = Mockito.mock(Reader.class);
         CSVParser csvParser = Mockito.mock(CSVParser.class);
-        Taps tapOn = new Taps("", null,"ON","Stop1","","","123");
-        Taps tapOff = new Taps("", null,"OFF","Stop2","","","123");
-        List<Taps> allTapsList = new ArrayList<>();
+        tapOn = new Taps("", null, "ON", "Stop1", "", "", "123");
+        tapOff = new Taps("", null, "OFF", "Stop2", "", "", "123");
+        allTapsList = new ArrayList<>();
         allTapsList.add(tapOn);
         allTapsList.add(tapOff);
 
-        TapOnOffDTO tapOnOffDTO = new TapOnOffDTO();
         tapOnOffDTO.setTapOn(tapOn);
         tapOnOffDTO.setTapOff(tapOff);
-        List<TapOnOffDTO> tapOnOffDTOList = new ArrayList<>();
         tapOnOffDTOList.add(tapOnOffDTO);
 
-
-        Map<String, Map<String, List<Taps>>> expectedTapOnOffDTOS = new HashMap<>();
-        Map<String, List<Taps>> expectedTaps = new HashMap<>();
-        List<Taps> listTapOn = new ArrayList<>();
-        List<Taps> listTapOff = new ArrayList<>();
         listTapOn.add(tapOn);
         listTapOff.add(tapOff);
-        expectedTaps.put("ON",listTapOn);
-        expectedTaps.put("OFF",listTapOff);
-        expectedTapOnOffDTOS.put("123",expectedTaps);
+        expectedTaps.put("ON", listTapOn);
+        expectedTaps.put("OFF", listTapOff);
+        expectedTapOnOffDTOS.put("123", expectedTaps);
         Mockito.when(csvParser.parse(reader)).thenReturn(allTapsList);
-        Mockito.when(aggregatorService.readAndParse(file)).thenReturn(allTapsList);
-        Mockito.when(aggregatorService.matchTrips(allTapsList)).thenReturn(expectedTapOnOffDTOS);
-        Mockito.when(aggregatorService.matchAndPrice(file)).thenReturn(tapOnOffDTOList);
-        Assertions.assertEquals(tapOnOffDTOList,aggregatorService.matchAndPrice(file));
-
+        Mockito.when(aggregatorServiceMock.readAndParse(file)).thenReturn(allTapsList);
+        Mockito.when(aggregatorServiceMock.matchTrips(allTapsList)).thenReturn(expectedTapOnOffDTOS);
+        Mockito.when(aggregatorServiceMock.matchAndPrice(file)).thenReturn(tapOnOffDTOList);
+        Assertions.assertEquals(tapOnOffDTOList, aggregatorServiceMock.matchAndPrice(file));
     }
-
 
     @Test
     public void matchTrips_empty_list() {
-        AggregatorService aggregatorService = new AggregatorService();
-        List<Taps> allTaps = new ArrayList<>();
-        Assertions.assertThrows(EmptyCSVException.class, () ->  aggregatorService.matchTrips(allTaps));
+        Assertions.assertThrows(EmptyCSVException.class, () -> aggregatorService.matchTrips(new ArrayList<>()));
     }
 
     @Test
     public void matchTrips_null_values_list() throws EmptyCSVException {
-        AggregatorService aggregatorService = new AggregatorService();
-        List<Taps> allTaps = new ArrayList<>();
-        allTaps.add(null);
-        Assertions.assertEquals(Collections.EMPTY_MAP, aggregatorService.matchTrips(allTaps));
+        allTapsList.add(null);
+        Assertions.assertEquals(Collections.EMPTY_MAP, aggregatorService.matchTrips(allTapsList));
     }
 
     @Test
     public void matchTrips_null_values() throws EmptyCSVException {
-        AggregatorService aggregatorService = new AggregatorService();
-        List<Taps> allTaps = new ArrayList<>();
-        Taps taps = new Taps("", null,"","","","","");
-        allTaps.add(taps);
-        Assertions.assertEquals(Collections.EMPTY_MAP, aggregatorService.matchTrips(allTaps));
+        tapOn = new Taps("", null, "", "", "", "", "");
+        allTapsList.add(tapOn);
+        Assertions.assertEquals(Collections.EMPTY_MAP, aggregatorService.matchTrips(allTapsList));
     }
 
     @Test
-    public void matchTrips_complete() throws EmptyCSVException{
+    public void matchTrips_complete() throws EmptyCSVException {
         //Given
-        AggregatorService aggregatorService = new AggregatorService();
-        List<Taps> allTaps = new ArrayList<>();
-        Taps tapOn = new Taps("", null,"ON","","","","123");
-        Taps tapOff = new Taps("", null,"OFF","","","","123");
-        allTaps.add(tapOn);
-        allTaps.add(tapOff);
+        tapOn = new Taps("", null, "ON", "", "", "", "123");
+        tapOff = new Taps("", null, "OFF", "", "", "", "123");
+        allTapsList.add(tapOn);
+        allTapsList.add(tapOff);
         //When
-        TapOnOffDTO tapOnOffDTO = new TapOnOffDTO();
         tapOnOffDTO.setTapOn(tapOn);
         tapOnOffDTO.setTapOff(tapOff);
         //Then
-        Map<String, Map<String, List<Taps>>> expectedTapOnOffDTOS = new HashMap<>();
-        Map<String, List<Taps>> expectedTaps = new HashMap<>();
-        List<Taps> listTapOn = new ArrayList<>();
-        List<Taps> listTapOff = new ArrayList<>();
         listTapOn.add(tapOn);
         listTapOff.add(tapOff);
-        expectedTaps.put("ON",listTapOn);
-        expectedTaps.put("OFF",listTapOff);
-        expectedTapOnOffDTOS.put("123",expectedTaps);
-        Assertions.assertEquals(expectedTapOnOffDTOS, aggregatorService.matchTrips(allTaps));
+        expectedTaps.put("ON", listTapOn);
+        expectedTaps.put("OFF", listTapOff);
+        expectedTapOnOffDTOS.put("123", expectedTaps);
+        Assertions.assertEquals(expectedTapOnOffDTOS, aggregatorService.matchTrips(allTapsList));
     }
 
     @Test
-    public void matchTrips_incomplete() throws EmptyCSVException{
-        AggregatorService aggregatorService = new AggregatorService();
-        List<Taps> allTaps = new ArrayList<>();
-        Taps tapOn = new Taps("", null,"ON","","","","123");
-        allTaps.add(tapOn);
-        TapOnOffDTO tapOnOffDTO = new TapOnOffDTO();
+    public void matchTrips_incomplete() throws EmptyCSVException {
+        tapOn = new Taps("", null, "ON", "", "", "", "123");
+        allTapsList.add(tapOn);
         tapOnOffDTO.setTapOn(tapOn);
-        Map<String, Map<String, List<Taps>>> expectedTapOnOffDTOS = new HashMap<>();
-        Map<String, List<Taps>> expectedTaps = new HashMap<>();
-        List<Taps> listTapOn = new ArrayList<>();
         listTapOn.add(tapOn);
-        expectedTaps.put("ON",listTapOn);
-        expectedTapOnOffDTOS.put("123",expectedTaps);
-        Assertions.assertEquals(expectedTapOnOffDTOS, aggregatorService.matchTrips(allTaps));
+        expectedTaps.put("ON", listTapOn);
+        expectedTapOnOffDTOS.put("123", expectedTaps);
+        Assertions.assertEquals(expectedTapOnOffDTOS, aggregatorService.matchTrips(allTapsList));
     }
 
     @Test
-    public void matchTrips_cancelled() throws EmptyCSVException{
-        AggregatorService aggregatorService = new AggregatorService();
-        List<Taps> allTaps = new ArrayList<>();
-        Taps tapOn = new Taps("", null,"ON","Stop1","","","123");
-        Taps tapOff = new Taps("", null,"OFF","Stop1","","","123");
-        allTaps.add(tapOn);
-        allTaps.add(tapOff);
-        TapOnOffDTO tapOnOffDTO = new TapOnOffDTO();
+    public void matchTrips_cancelled() throws EmptyCSVException {
+        tapOn = new Taps("", null, "ON", "Stop1", "", "", "123");
+        tapOff = new Taps("", null, "OFF", "Stop1", "", "", "123");
+        allTapsList.add(tapOn);
+        allTapsList.add(tapOff);
         tapOnOffDTO.setTapOn(tapOn);
         tapOnOffDTO.setTapOff(tapOff);
-        Map<String, Map<String, List<Taps>>> expectedTapOnOffDTOS = new HashMap<>();
-        Map<String, List<Taps>> expectedTaps = new HashMap<>();
-        List<Taps> listTapOn = new ArrayList<>();
-        List<Taps> listTapOff = new ArrayList<>();
+
         listTapOn.add(tapOn);
         listTapOff.add(tapOff);
-        expectedTaps.put("ON",listTapOn);
-        expectedTaps.put("OFF",listTapOff);
-        expectedTapOnOffDTOS.put("123",expectedTaps);
-        Assertions.assertEquals(expectedTapOnOffDTOS, aggregatorService.matchTrips(allTaps));
+        expectedTaps.put("ON", listTapOn);
+        expectedTaps.put("OFF", listTapOff);
+        expectedTapOnOffDTOS.put("123", expectedTaps);
+        Assertions.assertEquals(expectedTapOnOffDTOS, aggregatorService.matchTrips(allTapsList));
     }
 
     @Test
-    public void mapToDTO_success(){
+    public void mapToDTO_success() {
         //Given
-        AggregatorService aggregatorService = new AggregatorService();
-        Taps tapOn = new Taps("", null,"ON","","","","123");
-        Taps tapOff = new Taps("", null,"OFF","","","","123");
+        tapOn = new Taps("", null, "ON", "", "", "", "123");
+        tapOff = new Taps("", null, "OFF", "", "", "", "123");
         //When
-        TapOnOffDTO expectedTapOnOffDTO = new TapOnOffDTO();
-        expectedTapOnOffDTO.setTapOn(tapOn);
-        expectedTapOnOffDTO.setTapOff(tapOff);
+        tapOnOffDTO.setTapOn(tapOn);
+        tapOnOffDTO.setTapOff(tapOff);
         //Then
-        Map<String, List<Taps>> allTaps = new HashMap<>();
-        List<Taps> listTapOn = new ArrayList<>();
-        List<Taps> listTapOff = new ArrayList<>();
         listTapOn.add(tapOn);
         listTapOff.add(tapOff);
-        allTaps.put("ON",listTapOn);
-        allTaps.put("OFF",listTapOff);
-        Assertions.assertEquals(expectedTapOnOffDTO, aggregatorService.mapToDTO(allTaps));
+        allTapsMap.put("ON", listTapOn);
+        allTapsMap.put("OFF", listTapOff);
+        Assertions.assertEquals(tapOnOffDTO, aggregatorService.mapToDTO(allTapsMap));
     }
 
     @Test
-    public void mapToDTO_success_incomplete(){
+    public void mapToDTO_success_incomplete() {
         //Given
-        AggregatorService aggregatorService = new AggregatorService();
-        Taps tapOn = new Taps("", null,"ON","","","","123");
+        Taps tapOn = new Taps("", null, "ON", "", "", "", "123");
         //When
-        TapOnOffDTO expectedTapOnOffDTO = new TapOnOffDTO();
-        expectedTapOnOffDTO.setTapOn(tapOn);
+        tapOnOffDTO.setTapOn(tapOn);
         //Then
-        Map<String, List<Taps>> allTaps = new HashMap<>();
-        List<Taps> listTapOn = new ArrayList<>();
         listTapOn.add(tapOn);
-        allTaps.put("ON",listTapOn);
-        Assertions.assertEquals(expectedTapOnOffDTO, aggregatorService.mapToDTO(allTaps));
+        allTapsMap.put("ON", listTapOn);
+        Assertions.assertEquals(tapOnOffDTO, aggregatorService.mapToDTO(allTapsMap));
+    }
+
+    @AfterEach
+    public void destroy() {
+        tapOnOffDTO = null;
+        tapOn = null;
+        tapOff = null;
+        allTapsList = null;
+        listTapOn = null;
+        listTapOff = null;
+        expectedTapOnOffDTOS = null;
+        expectedTaps = null;
+        tapOnOffDTOList = null;
+        aggregatorService = null;
     }
 }

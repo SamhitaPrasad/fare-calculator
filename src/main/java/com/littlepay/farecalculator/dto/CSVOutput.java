@@ -143,4 +143,19 @@ public class CSVOutput {
         this.status = status;
     }
 
+    @Override
+    public String toString() {
+        return "CSVOutput{" +
+                "started=" + started +
+                ", finished=" + finished +
+                ", durationSecs=" + durationSecs +
+                ", fromStopId='" + fromStopId + '\'' +
+                ", toStopId='" + toStopId + '\'' +
+                ", chargeAmount=" + chargeAmount +
+                ", companyId='" + companyId + '\'' +
+                ", busID='" + busID + '\'' +
+                ", pan='" + pan + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

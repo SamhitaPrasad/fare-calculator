@@ -21,7 +21,4 @@ public class YAMLConfig {
     public void setStops(Map<String, Double> stops) {
         this.stops = stops;
     }
-
-
-
 }

@@ -6,19 +6,22 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+//@Component
 public class ExceptionUtil {
 
-    public List<ExceptionMessage> exceptionMessages;
-    public List<SimpleExceptionMessage> simpleExceptionMessage;
+    public static List<ExceptionMessage> exceptionMessages;
 
-    public List<SimpleExceptionMessage> exceptionMessage(String message){
-        simpleExceptionMessage = new ArrayList<>();
-        simpleExceptionMessage.add(new SimpleExceptionMessage(message));
-        return simpleExceptionMessage;
+    public ExceptionUtil(List<ExceptionMessage> exceptionMessages) {
+        this.exceptionMessages = exceptionMessages;
     }
 
-    public List<ExceptionMessage> exceptionMessage(String message, List<CSVOutput> csvOutputList){
+    public static List<ExceptionMessage> exceptionMessage(String message){
+        exceptionMessages = new ArrayList<>();
+        exceptionMessages.add(new ExceptionMessage(message));
+        return exceptionMessages;
+    }
+
+    public static List<ExceptionMessage> exceptionMessage(String message, List<CSVOutput> csvOutputList){
         exceptionMessages = new ArrayList<>();
         exceptionMessages.add(new ExceptionMessage(message, csvOutputList));
         return exceptionMessages;

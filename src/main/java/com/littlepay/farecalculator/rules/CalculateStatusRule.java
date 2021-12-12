@@ -17,11 +17,11 @@ import java.util.Objects;
  */
 @Component
 public class CalculateStatusRule implements Fare {
-     static final Logger logger = LoggerFactory.getLogger(CalculateStatusRule.class);
+     static final Logger LOGGER = LoggerFactory.getLogger(CalculateStatusRule.class);
 
     @Override
     public Map<Rule, Object> runRule(TapOnOffDTO tapOnOffDTO) {
-        logger.info("Rules engine - Calculating status");
+        LOGGER.info("Rules engine - Calculating status");
         Map<Rule, Object> fareSpec = new HashMap<>();
         fareSpec.put(Rule.STATUS,getTripStatus(tapOnOffDTO.getTapOn(),tapOnOffDTO.getTapOff()));
         tapOnOffDTO.setTripStatus(getTripStatus(tapOnOffDTO.getTapOn(),tapOnOffDTO.getTapOff()));

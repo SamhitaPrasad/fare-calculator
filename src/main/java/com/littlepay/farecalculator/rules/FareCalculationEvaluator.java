@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * FareCalculator is the Evaluator.
@@ -20,7 +22,7 @@ import java.util.*;
 @Service
 public class FareCalculationEvaluator {
 
-    static final Logger logger = LoggerFactory.getLogger(FareCalculationEvaluator.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(FareCalculationEvaluator.class);
 
     @Autowired
     CalculateFareRule calculateFareRule;
@@ -36,8 +38,7 @@ public class FareCalculationEvaluator {
         ruleOutcome.putAll(calculateStatusRule.runRule(tapOnOffDTO));
         ruleOutcome.putAll(calculateFareRule.runRule(tapOnOffDTO));
         ruleOutcome.putAll(calculateDurationRule.runRule(tapOnOffDTO));
-        logger.info("Got rules outcome");
-
+        LOGGER.info("Got rules outcome");
         return ruleOutcome;
     }
 }

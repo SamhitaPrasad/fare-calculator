@@ -17,11 +17,11 @@ import java.util.List;
 @Validated
 public class CSVParser {
 
-    static final Logger logger = LoggerFactory.getLogger(CSVParser.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(CSVParser.class);
 
     public List<@Valid Taps> parse(Reader reader) throws ConstraintViolationException {
 
-        logger.info("Parsing the csv");
+        LOGGER.info("Parsing the csv");
         CsvToBean<Taps> csvToBean = new CsvToBeanBuilder(reader)
                 .withType(Taps.class)
                 .withSeparator(',')
@@ -29,7 +29,7 @@ public class CSVParser {
                 .withIgnoreEmptyLine(true)
                 .build();
         List<Taps> results = csvToBean.parse();
-        logger.info("Parsing completed: {}", results.size());
+        LOGGER.info("Parsing completed: {}", results.size());
         return results;
     }
 

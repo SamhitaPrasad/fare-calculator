@@ -24,7 +24,7 @@ import java.util.Optional;
 @ConfigurationProperties
 public class CalculateFareRule implements Fare {
 
-    static final Logger logger = LoggerFactory.getLogger(CalculateFareRule.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(CalculateFareRule.class);
 
     Map<String, Double> stops;
 
@@ -35,7 +35,7 @@ public class CalculateFareRule implements Fare {
 
     @Override
     public Map<Rule, Object> runRule(TapOnOffDTO tapOnOffDTO) {
-        logger.info("Rules engine - Calculating fare");
+        LOGGER.info("Rules engine - Calculating fare");
 
         Map<Rule, Object> fareSpec = new HashMap<>();
         Optional<Double> fare;

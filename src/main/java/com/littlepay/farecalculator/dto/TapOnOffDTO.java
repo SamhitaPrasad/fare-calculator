@@ -13,11 +13,21 @@ public class TapOnOffDTO {
 
     @NotNull
     private Taps tapOn;
+
     @NotNull
     private Taps tapOff;
 
     private double fare;
+
     private Map<Rule,Object> ruleSpecs;
+
+    public TapOnOffDTO() {
+    }
+
+    public TapOnOffDTO(Taps tapOn, Taps tapOff) {
+        this.tapOn = tapOn;
+        this.tapOff = tapOff;
+    }
 
     public Map<Rule, Object> getRuleSpecs() {
         return ruleSpecs;
@@ -31,8 +41,6 @@ public class TapOnOffDTO {
         return tripStatus;
     }
 
-
-
     public double getFare() {
         return fare;
     }
@@ -42,14 +50,6 @@ public class TapOnOffDTO {
     }
 
     private TripStatus tripStatus;
-
-    public TapOnOffDTO() {
-    }
-
-    public TapOnOffDTO(Taps tapOn, Taps tapOff) {
-        this.tapOn = tapOn;
-        this.tapOff = tapOff;
-    }
 
     public Taps getTapOn() {
         return tapOn;
@@ -76,6 +76,9 @@ public class TapOnOffDTO {
         return "TapOnOffDTO{" +
                 "tapOn=" + tapOn +
                 ", tapOff=" + tapOff +
+                ", fare=" + fare +
+                ", ruleSpecs=" + ruleSpecs +
+                ", tripStatus=" + tripStatus +
                 '}';
     }
 

@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Service
 public class AggregatorService {
 
-    static final Logger logger = LoggerFactory.getLogger(AggregatorService.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(AggregatorService.class);
 
     @Autowired
     private FareCalculationEvaluator fareCalculationEvaluator;
@@ -70,21 +70,20 @@ public class AggregatorService {
     }
 
     public List<Taps> readAndParse(MultipartFile file) throws ConstraintViolationException {
-        logger.info("Inside match and price");
+        LOGGER.info("Inside match and price");
         Reader reader = null;
         try {
             reader = new InputStreamReader(file.getInputStream());
         } catch (IOException e) {
-            logger.error("Error while parsing csv file: {}", e.getMessage());
+            LOGGER.error("Error while parsing csv file: {}", e.getMessage());
         }
         List<Taps> taps = csvParser.parse(reader);
-        logger.info("Contents of the parse are: {}", taps.toString());
+        LOGGER.info("Contents of the parse are: {}", taps.toString());
         return taps;
     }
-    //TODO: Convert to concurrent list
 
     /**
-     * matchTrips takkes in the list of allTaps received from parsing and matches TapOn and TapOff data by copying the matched taps into a tempList and removing them from the result list once matched
+     * matchTrips takes in the list of allTaps received from parsing and matches TapOn and TapOff data by copying the matched taps into a tempList and removing them from the result list once matched
      * in order to reduce number of looping iterations.
      * Within the tempList we match the pan numbers to tapOn and TapOff to get objects of trips per pan number.
      *
@@ -109,14 +108,14 @@ public class AggregatorService {
         try {
             csvWriter.output(csvOutput);
         } catch (CsvRequiredFieldEmptyException e) {
-            logger.error("CsvRequiredFieldEmptyException while reading file: {}", e.getMessage());
-            throw new CSVCreationException("CSV creation exception");
+            LOGGER.error("CsvRequiredFieldEmptyException while reading file: {}", e.getMessage());
+            throw new CSVCreationException("CSV creation exception",csvOutput);
         } catch (CsvDataTypeMismatchException e) {
-            logger.error("CsvDataTypeMismatchException while reading file: {}", e.getMessage());
-            throw new CSVCreationException("CSV creation exception");
+            LOGGER.error("CsvDataTypeMismatchException while reading file: {}", e.getMessage());
+            throw new CSVCreationException("CSV creation exception",csvOutput);
         } catch (URISyntaxException e) {
-            logger.error("URISyntaxException while reading file: {}", e.getMessage());
-            throw new CSVCreationException("Exception with URI Syntax");
+            LOGGER.error("URISyntaxException while reading file: {}", e.getMessage());
+            throw new CSVCreationException("Exception with URI Syntax",csvOutput);
         }
     }
 
@@ -143,7 +142,7 @@ public class AggregatorService {
                 beanForCompletedAndCancelled(tapOnOffDTOElement, csvOutput, status);
                 break;
             default:
-                logger.error("Invalid Status: {}", status);
+                LOGGER.error("Invalid Status: {}", status);
 
         }
 

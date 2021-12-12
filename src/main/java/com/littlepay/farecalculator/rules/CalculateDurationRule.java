@@ -16,12 +16,12 @@ import java.util.Objects;
  */
 @Component
 public class CalculateDurationRule implements Fare {
-    static final Logger logger = LoggerFactory.getLogger(CalculateDurationRule.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(CalculateDurationRule.class);
     private Map<Rule, Object> fareSpec = new HashMap<>();
 
     @Override
     public Map<Rule, Object> runRule(TapOnOffDTO tapOnOffDTO) {
-        logger.info("Rules engine - Calculating duration");
+        LOGGER.info("Rules engine - Calculating duration");
         fareSpec.put(Rule.DURATION, getTimeDifferenceInMillis(tapOnOffDTO));
         return fareSpec;
     }

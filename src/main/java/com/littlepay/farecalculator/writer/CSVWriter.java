@@ -28,14 +28,14 @@ public class CSVWriter {
     private StringBuilder stringBuilder = new StringBuilder();
     private Writer writer;
     private FileWriter fileWriter;
-    static final Logger logger = LoggerFactory.getLogger(CSVWriter.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(CSVWriter.class);
 
     public void output(List<CSVOutput> csvOutput) throws CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, URISyntaxException, CSVCreationException {
         createDirectory();
         try {
             fileWriter = new FileWriter(checkIfFileExists(getNewFilename()));
         } catch (IOException e) {
-            logger.error("Error creating file: {}",e.getMessage());
+            LOGGER.error("Error creating file: {}",e.getMessage());
         }
         writer  = fileWriter;
         StatefulBeanToCsvBuilder<CSVOutput> builder = new StatefulBeanToCsvBuilder<>(writer);
@@ -44,7 +44,7 @@ public class CSVWriter {
         try {
             writer.close();
         } catch (IOException e) {
-            logger.error("Error writing file: {}",e.getMessage());
+            LOGGER.error("Error writing file: {}",e.getMessage());
         }
     }
 
